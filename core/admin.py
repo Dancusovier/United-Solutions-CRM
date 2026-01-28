@@ -1,73 +1,114 @@
 from django.contrib import admin
-from .models import Client, Lead, Interaction
+from django import forms
+from django.contrib.admin.widgets import AdminDateWidget
+from .models import Client, SalesMade, Interaction
 from django.template.response import TemplateResponse
 
-class LeadInteractionInline(admin.TabularInline):
-    model = Interaction
-    extra = 0
-    exclude = ('client',)
-
-
+# ---------------------------
+# Interaction Inlines
+# ---------------------------
 class ClientInteractionInline(admin.TabularInline):
     model = Interaction
     extra = 0
-    exclude = ('lead',)
+    exclude = ('sales_made',)  # hide completed client field for prospective client interactions
 
+class SalesInteractionInline(admin.TabularInline):
+    model = Interaction
+    extra = 0
+    exclude = ('client',)  # hide prospective client field for sales interactions
 
+# ---------------------------
+# Date of Birth Widget
+# ---------------------------
+class DOBAdminForm(forms.ModelForm):
+    date_of_birth = forms.DateField(
+        widget=forms.DateInput(format='%m-%d-%Y'),
+        input_formats=['%m-%d-%Y'],
+        required=False,
+    )
 
-# Admin action to convert selected leads to clients
-def convert_to_client(modeladmin, request, queryset):
-    if 'apply' in request.POST:
-        # User confirmed, do the conversion
-        for lead in queryset:
-            lead.convert_to_client()
-        modeladmin.message_user(request, "Selected leads have been converted to clients.")
-        return None
-    else:
-        # Show confirmation page
-        context = {
-            'leads': queryset,
-            'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-            'queryset': queryset,
-        }
-        return TemplateResponse(request, "admin/convert_to_client_confirmation.html", context)
-convert_to_client.short_description = "Convert selected leads to clients"
+    class Meta:
+        model = Client
+        fields = '__all__'
 
-# Current registrations are still here
+# ---------------------------
+# Client Admin
+# ---------------------------
+@admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    inlines = [ClientInteractionInline]
-
-admin.site.register(Client, ClientAdmin)
-
-
-@admin.register(Lead)
-class LeadAdmin(admin.ModelAdmin):
+    form = DOBAdminForm
     list_display = ('first_name', 'last_name', 'email', 'status')
     list_filter = ('status',)
-    search_fields = ('first_name', 'last_name', 'email')
-    actions = ['convert_selected_leads']
+    search_fields = ('first_name', 'last_name', 'email', 'phone')
+    inlines = [ClientInteractionInline]
+    actions = ['convert_selected_clients']
 
-    def convert_selected_leads(self, request, queryset):
-        for lead in queryset.filter(status='active'):
-            lead.convert_to_client()
-        self.message_user(request, "Selected leads were converted to clients.")
+    # -----------------------
+    # Convert selected clients to SalesMade
+    # -----------------------
+    def convert_selected_clients(self, request, queryset):
+        for client in queryset.filter(status='active'):
+            client.convert_to_sales_made()
+        self.message_user(request, "Selected clients were converted to Sales Made.")
+    convert_selected_clients.short_description = "Convert selected clients to Sales Made"
 
-    convert_selected_leads.short_description = "Convert selected leads to clients"
-
+    # -----------------------
+    # Only show active clients
+    # -----------------------
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.exclude(status__in=['converted', 'archived'])
 
+    # -----------------------
+    # Field layout with conditional service info
+    # -----------------------
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = [
+            ('Personal Info', {'fields': ('first_name', 'last_name', 'email', 'phone')}),
+            ('Address', {'fields': ('address', 'city', 'state', 'zip_code')}),
+            ('Sensitive Info', {'fields': ('date_of_birth', 'ssn_last4')}),
+            ('Qualification', {'fields': ('qualification_notes',)}),
+            ('Services', {'fields': ('service_1_selected', 'service_2_selected')}),
+        ]
 
+        if obj:
+            service_fields = []
+            if obj.service_1_selected:
+                service_fields.append('service_1_info')
+            if obj.service_2_selected:
+                service_fields.append('service_2_info')
+            if service_fields:
+                fieldsets.append(('Service Details', {'fields': service_fields}))
 
+        return fieldsets
 
+# ---------------------------
+# SalesMade Admin
+# ---------------------------
+@admin.register(SalesMade)
+class SalesMadeAdmin(admin.ModelAdmin):
+    form = DOBAdminForm
+    list_display = ('first_name', 'last_name', 'email', 'phone')
+    search_fields = ('first_name', 'last_name', 'email', 'phone')
+    inlines = [SalesInteractionInline]
 
-class ClientAdmin(admin.ModelAdmin):
-    inlines = [ClientInteractionInline]
+    # Mirror the same layout as ClientAdmin
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = [
+            ('Personal Info', {'fields': ('first_name', 'last_name', 'email', 'phone')}),
+            ('Address', {'fields': ('address', 'city', 'state', 'zip_code')}),
+            ('Sensitive Info', {'fields': ('date_of_birth', 'ssn_last4')}),
+            ('Qualification', {'fields': ('qualification_notes',)}),
+            ('Services', {'fields': ('service_1_selected', 'service_2_selected')}),
+        ]
 
+        if obj:
+            service_fields = []
+            if obj.service_1_selected:
+                service_fields.append('service_1_info')
+            if obj.service_2_selected:
+                service_fields.append('service_2_info')
+            if service_fields:
+                fieldsets.append(('Service Details', {'fields': service_fields}))
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.filter(status='active')  # only show active leads
-
-
+        return fieldsets

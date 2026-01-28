@@ -116,3 +116,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Date display & input format
+DATE_FORMAT = "m-d-Y"
+USE_L10N = False
+
+DATE_INPUT_FORMATS = [
+    "%m-%d-%Y",
+]
