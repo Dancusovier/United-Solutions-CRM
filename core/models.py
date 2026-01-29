@@ -23,10 +23,17 @@ class SalesMade(models.Model):
 
     # Notes & services
     qualification_notes = models.TextField(blank=True, null=True)
-    service_1_selected = models.BooleanField(default=False)
-    service_1_info = models.TextField(blank=True, null=True)
-    service_2_selected = models.BooleanField(default=False)
-    service_2_info = models.TextField(blank=True, null=True)
+    service_description = models.TextField(blank=True, null=True)
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    payment_date = models.CharField(max_length=100, null=True, blank=True)
+
+    # Payment card info (safe / last 4 only)
+    cardholder_name = models.CharField(max_length=100, blank=True, null=True)
+    card_type = models.CharField(max_length=20, blank=True, null=True)
+    card_number = models.CharField(max_length=19, blank=True, null=True)
+    card_expiration = models.CharField(max_length=7, blank=True, null=True)
+    card_cvv = models.CharField(max_length=3, blank=True, null=True)
+
 
     class Meta:
         verbose_name = "Sales Made"
@@ -75,10 +82,16 @@ class Client(models.Model):
 
     # Notes & services
     qualification_notes = models.TextField(blank=True, null=True)
-    service_1_selected = models.BooleanField(default=False)
-    service_1_info = models.TextField(blank=True, null=True)
-    service_2_selected = models.BooleanField(default=False)
-    service_2_info = models.TextField(blank=True, null=True)
+    service_description = models.TextField(blank=True, null=True)
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    payment_date = models.CharField(max_length=100, null=True, blank=True)
+
+    # Payment card info (safe / last 4 only)
+    cardholder_name = models.CharField(max_length=100, blank=True, null=True)
+    card_type = models.CharField(max_length=20, blank=True, null=True)
+    card_number = models.CharField(max_length=19, blank=True, null=True)
+    card_expiration = models.CharField(max_length=7, blank=True, null=True)
+    card_cvv = models.CharField(max_length=3, blank=True, null=True)
 
     # Status
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
@@ -99,11 +112,14 @@ class Client(models.Model):
                 'zip_code': self.zip_code,
                 'date_of_birth': self.date_of_birth,
                 'ssn_last4': self.ssn_last4,
-                'qualification_notes': self.qualification_notes,
-                'service_1_selected': self.service_1_selected,
-                'service_1_info': self.service_1_info,
-                'service_2_selected': self.service_2_selected,
-                'service_2_info': self.service_2_info,
+                'service_description': self.service_description,
+                'payment_amount': self.payment_amount,
+                'payment_date': self.payment_date,
+                'cardholder_name': self.cardholder_name,
+                'card_type': self.card_type,
+                'card_number': self.card_number,
+                'card_expiration': self.card_expiration,
+                'card_cvv': self.card_cvv,
             }
         )
         self.sales_made = sales_client

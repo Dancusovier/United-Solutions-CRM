@@ -68,17 +68,22 @@ class ClientAdmin(admin.ModelAdmin):
             ('Address', {'fields': ('address', 'city', 'state', 'zip_code')}),
             ('Sensitive Info', {'fields': ('date_of_birth', 'ssn_last4')}),
             ('Qualification', {'fields': ('qualification_notes',)}),
-            ('Services', {'fields': ('service_1_selected', 'service_2_selected')}),
+            ('Service & Payment', {
+                'fields': (
+                    'service_description',
+                    'payment_amount',
+                    'payment_date',
+                    'cardholder_name',
+                    'card_type',
+                    'card_number',
+                    'card_expiration',
+                    'card_cvv' ,
+                )
+            }),
+
         ]
 
-        if obj:
-            service_fields = []
-            if obj.service_1_selected:
-                service_fields.append('service_1_info')
-            if obj.service_2_selected:
-                service_fields.append('service_2_info')
-            if service_fields:
-                fieldsets.append(('Service Details', {'fields': service_fields}))
+
 
         return fieldsets
 
@@ -99,16 +104,19 @@ class SalesMadeAdmin(admin.ModelAdmin):
             ('Address', {'fields': ('address', 'city', 'state', 'zip_code')}),
             ('Sensitive Info', {'fields': ('date_of_birth', 'ssn_last4')}),
             ('Qualification', {'fields': ('qualification_notes',)}),
-            ('Services', {'fields': ('service_1_selected', 'service_2_selected')}),
-        ]
+            ('Service & Payment', {
+                'fields': (
+                    'service_description',
+                    'payment_amount',
+                    'payment_date',
+                    'cardholder_name',
+                    'card_type',
+                    'card_number',
+                    'card_expiration',
+                    'card_cvv' ,
+                )
+            }),
 
-        if obj:
-            service_fields = []
-            if obj.service_1_selected:
-                service_fields.append('service_1_info')
-            if obj.service_2_selected:
-                service_fields.append('service_2_info')
-            if service_fields:
-                fieldsets.append(('Service Details', {'fields': service_fields}))
+        ]
 
         return fieldsets
