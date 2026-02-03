@@ -19,7 +19,8 @@ class SalesMade(models.Model):
 
     # Personal info
     date_of_birth = models.DateField(blank=True, null=True)
-    ssn_last4 = models.CharField("SSN (/Last 4)", max_length=9, blank=True, null=True)
+    ssn_last4 = models.CharField("SSN (/Last 4)", max_length=15, blank=True, null=True)
+    mother_maiden_name = models.CharField(verbose_name="Mother's Maiden Name", max_length=20, blank=True, null=True)
 
     # Notes & services
     qualification_notes = models.TextField(blank=True, null=True)
@@ -79,7 +80,7 @@ class Client(models.Model):
     # Personal info
     date_of_birth = models.DateField(blank=True, null=True)
     ssn_last4 = models.CharField("SSN (/Last 4)", max_length=9, blank=True, null=True)
-
+    mother_maiden_name = models.CharField(verbose_name="Mother's Maiden Name", max_length=20, blank=True, null=True)
     # Notes & services
     qualification_notes = models.TextField(blank=True, null=True)
     service_description = models.TextField(blank=True, null=True)
@@ -112,6 +113,8 @@ class Client(models.Model):
                 'zip_code': self.zip_code,
                 'date_of_birth': self.date_of_birth,
                 'ssn_last4': self.ssn_last4,
+                'mother_maiden_name': self.mother_maiden_name,
+                'qualification_notes': self.qualification_notes,
                 'service_description': self.service_description,
                 'payment_amount': self.payment_amount,
                 'payment_date': self.payment_date,
@@ -153,4 +156,11 @@ class Interaction(models.Model):
 
     def __str__(self):
         return f"{self.date.strftime('%Y-%m-%d')} - {self.note[:30]}"
+
+
+class TotalPayments(models.Model):
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    def __str__(self):
+        return f"Total: {self.total_amount}"
 

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sales Made</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        button { padding: 5px 10px; }
+    </style>
+</head>
+<body>
+
+<h1>Sales Made</h1>
+
+<!-- TOTAL COUNTER -->
+<h2>Total Payments Collected: ${{ total.total_amount }}</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>first_name</th>
+            <th>last_name</th>
+            <th>Payment Amount</th>
+            <th>Add Payment</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for client in clients %}
+        <tr>
+            <td>{{ client.first_name }}</td>
+            <td>{{ client.last_name }}</td>
+            <td>${{ client.payment_amount }}</td>
+            <td>
+                {% if client.payment_amount %}
+                <form method="get" action="{% url 'confirm_add_payment' client.id %}">
+                    <button type="submit">Add Payment</button>
+                </form>
+                {% else %}
+                No payment
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No sales yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

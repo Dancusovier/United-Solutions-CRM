@@ -1,0 +1,21 @@
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+
+    <div style="
+        margin-bottom: 8px;
+        padding: 6px 10px;
+        border: 1px solid var(--border-color, #ddd);
+        background: var(--body-bg, #f8f8f8);
+        color: var(--body-fg, #000);
+        font-size: 14px;
+        display: inline-block;
+        border-radius: 4px;
+    ">
+        <strong>Total Payments Collected:</strong>
+        ${{ total_payments.total_amount|default:"0.00" }}
+    </div>
+
+    {{ block.super }}
+
+{% endblock %}

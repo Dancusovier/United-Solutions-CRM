@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recent Clients</title>
+</head>
+<body>
+
+<h1>Recently Added Clients</h1>
+
+<ul>
+    {% for client in clients %}
+        <li>{{ client.name }} - {{ client.email }}</li>
+    {% empty %}
+        <li>No clients yet</li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>

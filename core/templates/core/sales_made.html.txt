@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sales Made</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        button { padding: 4px 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<h1>Sales Made</h1>
+
+<!-- Total Payments Counter -->
+<h2>Total Payments Collected: ${{ total.total_amount }}</h2>
+
+<!-- Sales Table -->
+<table>
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Payment Amount</th>
+            <th>Add Payment</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for client in clients %}
+        <tr>
+            <td>{{ client.first_name }}</td>
+            <td>{{ client.last_name }}</td>
+            <td>{{ client.payment_amount }}</td>
+            <td>
+                <form method="get" action="{% url 'confirm_add_payment' client.id %}">
+                    <button type="submit">Add Payment</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No clients found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+<h2>Are you sure?</h2>
+
+<p>
+You are about to add <strong>${{ client.payment_amount }}</strong>
+from {{ client.name }} to the total.
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">YES, ADD IT</button>
+</form>
+
+<a href="{% url 'client_list' %}">Cancel</a>
